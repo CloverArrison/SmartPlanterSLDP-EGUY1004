@@ -39,7 +39,7 @@ void setup() {
   pinMode(fanPin, OUTPUT);
   pinMode(pumpPin, OUTPUT);
 
-  // Test Fan
+  // Test Fan and Pump
   Serial.println("Testing Fan and Pump");
   digitalWrite(pumpPin, HIGH);
   delay(500);
