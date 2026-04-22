@@ -9,16 +9,14 @@
 #define pumpPin 12
 
 // Set Values for specific plant
-const float LowMoisture = 700;
-const float HighMoisture = 100;
-const float lowLight = 400;
-const float highLight = 100;
+const float LowMoisture = 550;
+const float HighMoisture = 300;
+const float lowLight = 75;
 
 // Temp sensor object
 DHT22 dht22(tempSensePin); 
 // LCD object
 LiquidCrystal_I2C lcd(0x27,20,4);
-
 
 void setup() {
   Serial.begin(9600);
@@ -61,15 +59,15 @@ void loop() {
   float tempF = dht22.getTemperature()/(9/5)+32;
 
   // Map sensor values to percent
-  float mappedLight = map(rawLight, 500, 0, 0, 100);
-  float mappedMoisture = map(rawMoisture, 0, 1024, 0, 100);
+  float mappedLight = rawLight;//map(rawLight, 512, 0, 100, 0);
+  float mappedMoisture = rawMoisture;//map(rawMoisture, 580, 350, 100, 0);
 
   // Write data to LCD
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Light Level: " + String(mappedLight));
+  lcd.print("Light:     " + String(mappedLight));
   lcd.setCursor(0,1);
-  lcd.print("Moisture Level: " + String(mappedMoisture));
+  lcd.print("Moisture:  " + String(mappedMoisture));
   lcd.setCursor(0,2);
   lcd.print("Temp (F) : " + String(tempF));
   lcd.setCursor(0,3);
@@ -78,27 +76,26 @@ void loop() {
   // Run or turn off fan and pump
   handleFan(mappedLight);
   handlePump(mappedMoisture);
-
+  delay(500);
+  Serial.println("loop");
 }
 
 
 void handleFan(float light){
-  if(light < lowLight){
+  if(light < 60){
     digitalWrite(fanPin, HIGH);
+    Serial.println("run fan");
   }
   else digitalWrite(fanPin, LOW);
 
 }
 
 void handlePump(float moisture){
-  if(moisture < LowMoisture){
+  if(moisture > LowMoisture){
+    Serial.println("run pump");
     digitalWrite(pumpPin, HIGH);
-  }
-  else if (moisture > HighMoisture)
-  {
-    digitalWrite(pumpPin, LOW);
-  }
 
+  }
   else digitalWrite(pumpPin, LOW);
 
 }
